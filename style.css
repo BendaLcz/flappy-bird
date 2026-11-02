@@ -1,0 +1,737 @@
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #14181f;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* The stage is the area the game may use: the viewport minus notches / home indicators. */
+#stage {
+  position: fixed;
+  top: env(safe-area-inset-top, 0px);
+  right: env(safe-area-inset-right, 0px);
+  bottom: env(safe-area-inset-bottom, 0px);
+  left: env(safe-area-inset-left, 0px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+canvas {
+  display: block;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  /* Size is set from JS to keep the aspect ratio. */
+}
+
+#controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.icon-btn[hidden] {
+  display: none;
+}
+
+.icon-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.icon-btn:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+.icon-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+  pointer-events: none;
+}
+
+/* Development readout (see src/perf.js) */
+.perf {
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  z-index: 1;
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #9dffb0;
+  font:
+    10px/1.3 ui-monospace,
+    Menlo,
+    Consolas,
+    monospace;
+  white-space: pre;
+  pointer-events: none;
+}
+
+.perf:empty {
+  display: none;
+}
+
+/* Landscape hint on small touch devices; fades out on its own. */
+#rotate-hint {
+  display: none;
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font:
+    14px system-ui,
+    sans-serif;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 3;
+}
+
+@media (orientation: landscape) and (max-height: 520px) and (pointer: coarse) {
+  #rotate-hint {
+    display: block;
+    animation: hint-fade 6s forwards;
+  }
+}
+
+@keyframes hint-fade {
+  0%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* ---- Shop ---- */
+.icon-btn {
+  position: relative;
+}
+
+/* Red dot on the shop button when something is affordable. */
+.icon-btn.badge::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff4d4d;
+  border: 2px solid #fff;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.shop {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  box-sizing: border-box;
+  background: rgba(8, 12, 20, 0.72);
+  font:
+    16px system-ui,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+
+.shop[hidden] {
+  display: none;
+}
+
+.shop-panel {
+  width: min(480px, 100%);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f5ecc0;
+  color: #3a2b00;
+  border: 4px solid #5a4a1a;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.shop-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.shop-head h2 {
+  flex: 1;
+  margin: 0;
+  font-size: 24px;
+}
+
+.shop-head .icon-btn {
+  width: 40px;
+  height: 40px;
+  background: #5a4a1a;
+}
+
+.shop-coins {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #fffbe6;
+  border: 2px solid #b9ad7a;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.coin-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffd23f;
+  border: 2px solid #a8760a;
+  box-sizing: border-box;
+  vertical-align: -2px;
+}
+
+.shop-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 0 12px 8px;
+}
+
+.shop-tab {
+  flex: 1;
+  min-height: 44px;
+  padding: 6px 4px;
+  border: 2px solid #5a4a1a;
+  border-radius: 10px;
+  background: #e6d9a0;
+  color: #3a2b00;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.shop-tab.selected {
+  background: #5a4a1a;
+  color: #fff;
+}
+
+.shop-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 10px;
+  padding: 4px 12px 12px;
+  align-content: start;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  background: #fffbe6;
+  border: 3px solid #b9ad7a;
+  border-radius: 12px;
+  text-align: center;
+  outline: none;
+}
+
+.card.equipped {
+  border-color: #2e9e4f;
+}
+
+.card:focus-visible {
+  box-shadow: 0 0 0 3px #3a2b00;
+}
+
+.card-art {
+  display: block;
+  border-radius: 8px;
+}
+
+.card-art.bird {
+  height: 64px;
+  width: auto;
+}
+
+.card-art.world {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 192 / 112;
+  border: 2px solid #5a4a1a;
+  box-sizing: border-box;
+}
+
+.card-art.track {
+  width: 100%;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  font-size: 36px;
+  color: #fff;
+  background: linear-gradient(135deg, #7a5cd6, #3aa7c9);
+}
+
+.card-art.track.playing {
+  animation: bob 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes bob {
+  to {
+    transform: translateY(-4px);
+  }
+}
+
+.card-name {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.card-desc {
+  font-size: 13px;
+  color: #7a6a2a;
+  margin-top: -4px;
+}
+
+.card-btn {
+  width: 100%;
+  min-height: 40px;
+  padding: 6px 8px;
+  border: 2px solid #8a7a3a;
+  border-radius: 10px;
+  background: #e6d9a0;
+  color: #3a2b00;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.card-btn.primary {
+  background: #ffb020;
+  border-color: #8a5a00;
+}
+
+.card-btn.ghost {
+  background: transparent;
+}
+
+.card-btn.is-equipped {
+  background: #cfeacb;
+  border-color: #2e9e4f;
+  color: #1c5c2f;
+  cursor: default;
+}
+
+.card-btn.poor {
+  opacity: 0.55;
+}
+
+.card-btn:focus-visible,
+.shop-tab:focus-visible {
+  outline: 3px solid #3a2b00;
+  outline-offset: 2px;
+}
+
+.shop-hint {
+  margin: 0;
+  padding: 6px 12px 10px;
+  min-height: 1.3em;
+  font-size: 14px;
+  text-align: center;
+  color: #7a6a2a;
+}
+
+/* ---- Tabs (six in the shop) ---- */
+.shop-tabs {
+  flex-wrap: wrap;
+}
+
+.shop-tab {
+  min-width: 64px;
+  font-size: 14px;
+}
+
+.card-art.boost {
+  height: 64px;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  font-size: 38px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ffe08a, #ffb020);
+}
+
+.card-level {
+  font-size: 13px;
+  font-weight: 700;
+  color: #5a4a1a;
+  letter-spacing: 1px;
+}
+
+/* ---- Mode button (bottom of the game, only while waiting to start) ---- */
+.mode-pill {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 2;
+  min-height: 44px;
+  padding: 8px 20px;
+  border: 3px solid #5a4a1a;
+  border-radius: 999px;
+  background: #ffb020;
+  color: #3a2b00;
+  font:
+    700 16px system-ui,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mode-pill[hidden] {
+  display: none;
+}
+
+.mode-pill:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+.end-pill {
+  background: #ff7a6b;
+}
+
+/* ---- Left-handed layout ---- */
+body.controls-left #controls {
+  right: auto;
+  left: 8px;
+}
+
+/* ---- Hub ---- */
+.hub-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 14px 16px;
+}
+
+.hub-body h3 {
+  margin: 14px 0 6px;
+  font-size: 17px;
+}
+
+.hub-note {
+  margin: 4px 0 10px;
+  font-size: 14px;
+  color: #7a6a2a;
+}
+
+.mission,
+.score-block {
+  margin-bottom: 10px;
+  padding: 10px;
+  background: #fffbe6;
+  border: 3px solid #b9ad7a;
+  border-radius: 12px;
+}
+
+.score-block h3 {
+  margin: 0 0 4px;
+}
+
+.score-block .hub-note {
+  margin: 0;
+}
+
+.mission-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-weight: 700;
+}
+
+.mission-reward {
+  white-space: nowrap;
+  color: #8a6a00;
+  font-weight: 700;
+}
+
+.mission-count {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #7a6a2a;
+}
+
+.bar {
+  margin-top: 8px;
+  height: 12px;
+  border: 2px solid #8a7a3a;
+  border-radius: 999px;
+  background: #e6d9a0;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: #2e9e4f;
+}
+
+.score-list {
+  margin: 0;
+  padding-left: 26px;
+}
+
+.score-list li {
+  padding: 3px 0;
+}
+
+.score-list li::marker {
+  font-weight: 700;
+  color: #8a6a00;
+}
+
+.score-list li {
+  display: list-item;
+}
+
+.score-value {
+  display: inline-block;
+  min-width: 3ch;
+  font-weight: 700;
+}
+
+.score-date {
+  margin-left: 12px;
+  font-size: 13px;
+  color: #7a6a2a;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  margin: 6px 0;
+  padding: 10px;
+  background: #fffbe6;
+  border: 3px solid #b9ad7a;
+  border-radius: 12px;
+}
+
+.stat-grid dt {
+  color: #5a4a1a;
+}
+
+.stat-grid dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+}
+
+.achievements {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.achievements li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+  padding: 8px 10px;
+  background: #fffbe6;
+  border: 3px solid #b9ad7a;
+  border-radius: 12px;
+  opacity: 0.7;
+}
+
+.achievements li.done {
+  opacity: 1;
+  border-color: #2e9e4f;
+}
+
+.ach-mark {
+  width: 1.2em;
+  text-align: center;
+  font-weight: 700;
+  color: #2e9e4f;
+}
+
+.ach-body {
+  flex: 1;
+}
+
+.ach-name {
+  font-weight: 700;
+}
+
+.ach-desc {
+  font-size: 13px;
+  color: #7a6a2a;
+}
+
+.friend-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px;
+}
+
+.friend {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  background: #fffbe6;
+  border: 3px solid #2e9e4f;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.friend.locked {
+  border-color: #b9ad7a;
+}
+
+.friend-art {
+  width: 48px;
+  height: 52px;
+}
+
+.friend.locked .friend-art {
+  filter: brightness(0);
+  opacity: 0.25;
+}
+
+.friend-name {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.friend-count {
+  font-size: 12px;
+  color: #7a6a2a;
+}
+
+.setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 48px;
+  padding: 6px 2px;
+  border-bottom: 1px solid #d6c98f;
+  font-weight: 700;
+}
+
+.setting small {
+  display: block;
+  font-weight: 400;
+  font-size: 13px;
+  color: #7a6a2a;
+}
+
+.setting input[type="range"] {
+  flex: 0 0 45%;
+  min-width: 0;
+  accent-color: #ffb020;
+}
+
+.setting input[type="checkbox"] {
+  width: 26px;
+  height: 26px;
+  accent-color: #2e9e4f;
+}
+
+.setting input:focus-visible {
+  outline: 3px solid #3a2b00;
+  outline-offset: 2px;
+}
+
+.danger {
+  margin-top: 18px;
+}
+
+.danger-row {
+  display: flex;
+  gap: 10px;
+}
+
+.card-btn.danger-btn {
+  background: #ff7a6b;
+  border-color: #8a1c10;
+  color: #2b0500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-art.track.playing {
+    animation: none;
+  }
+}

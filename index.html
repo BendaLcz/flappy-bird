@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#4ec0ca" />
+    <meta
+      name="description"
+      content="A simple Flappy Bird game that runs on desktop and mobile."
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Flappy Bird" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/png" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/style.css" />
+    <title>Flappy Bird</title>
+  </head>
+  <body>
+    <div id="stage">
+      <canvas id="game" aria-label="Flappy Bird game"></canvas>
+
+      <div id="controls">
+        <button
+          id="btn-shop"
+          class="icon-btn"
+          type="button"
+          aria-label="Open shop"
+        ></button>
+        <button
+          id="btn-hub"
+          class="icon-btn"
+          type="button"
+          aria-label="Missions, scores and stats"
+        ></button>
+        <button
+          id="btn-settings"
+          class="icon-btn"
+          type="button"
+          aria-label="Settings"
+        ></button>
+        <button
+          id="btn-pause"
+          class="icon-btn"
+          type="button"
+          aria-label="Pause"
+        ></button>
+        <button
+          id="btn-fs"
+          class="icon-btn"
+          type="button"
+          aria-label="Toggle fullscreen"
+          hidden
+        ></button>
+      </div>
+
+      <button id="btn-mode" class="mode-pill" type="button"></button>
+      <button id="btn-end" class="mode-pill end-pill" type="button" hidden>
+        End run
+      </button>
+
+      <div id="rotate-hint">
+        Rotate your phone to portrait for the best view
+      </div>
+
+      <div
+        id="shop"
+        class="shop"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="shop-title"
+        hidden
+      >
+        <div class="shop-panel">
+          <header class="shop-head">
+            <h2 id="shop-title">Shop</h2>
+            <div class="shop-coins" aria-live="polite">
+              <span class="coin-dot" aria-hidden="true"></span>
+              <span id="shop-coins">0</span>
+              <span class="sr-only">coins</span>
+            </div>
+            <button
+              id="shop-close"
+              class="icon-btn"
+              type="button"
+              aria-label="Close shop"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M6 6l12 12M18 6L6 18"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+          </header>
+          <div id="shop-tabs" class="shop-tabs" role="tablist"></div>
+          <div id="shop-list" class="shop-list" role="tabpanel"></div>
+          <p id="shop-hint" class="shop-hint" aria-live="polite">
+            Collect coins while flying to unlock more.
+          </p>
+        </div>
+      </div>
+
+      <div
+        id="hub"
+        class="shop"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="hub-title"
+        hidden
+      >
+        <div class="shop-panel">
+          <header class="shop-head">
+            <h2 id="hub-title">Progress</h2>
+            <button
+              id="hub-close"
+              class="icon-btn"
+              type="button"
+              aria-label="Close"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M6 6l12 12M18 6L6 18"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+          </header>
+          <div id="hub-tabs" class="shop-tabs" role="tablist"></div>
+          <div id="hub-body" class="hub-body" role="tabpanel"></div>
+        </div>
+      </div>
+
+      <div
+        id="settings"
+        class="shop"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-title"
+        hidden
+      >
+        <div class="shop-panel">
+          <header class="shop-head">
+            <h2 id="settings-title">Settings</h2>
+            <button
+              id="settings-close"
+              class="icon-btn"
+              type="button"
+              aria-label="Close"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M6 6l12 12M18 6L6 18"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+          </header>
+          <div id="settings-body" class="hub-body"></div>
+        </div>
+      </div>
+    </div>
+
+    <noscript>This game needs JavaScript.</noscript>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
